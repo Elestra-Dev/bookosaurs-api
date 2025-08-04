@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { User } from '../models/User.js';
+import { IUserDocument, User } from '../models/User.js';
 import { hashPassword, comparePasswords } from '../utils/hashPassword.js';
 import { generateToken } from '../utils/generateToken.js';
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -12,7 +12,7 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
     const hashed = await hashPassword(password);
-    const user = await User.create({ email, password: hashed });
+    const user: IUserDocument = await User.create({ username, email, password: hashed });
 
     res.status(201).json({
       message: 'User registered successfully',
